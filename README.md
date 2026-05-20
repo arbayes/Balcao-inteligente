@@ -114,37 +114,6 @@ python main.py
 
 Na primeira execução, o sistema cria automaticamente as pastas locais de dados, backups e relatórios.
 
-## Pastas e Dados Locais
-
-O app utiliza SQLite local. Os dados reais ficam fora do Git por segurança:
-
-- `data/`
-- `backups/`
-- `relatorios/`
-- `.venv/`
-- `build/`
-- `dist/`
-
-Essas pastas não devem ser enviadas ao GitHub junto com dados reais de clientes, fornecedores, caixa ou vendas.
-
-## GitHub
-
-Para subir o projeto:
-
-```powershell
-git add .
-git commit -m "Atualiza sistema de gerenciamento"
-git push origin main
-```
-
-Se for o primeiro envio da branch:
-
-```powershell
-git push -u origin main
-```
-
-**Recomendação:** manter o repositório privado enquanto o sistema estiver sendo usado em um negócio real ou ainda possuir regras comerciais em desenvolvimento.
-
 ## Observação
 
 Este projeto ainda está em beta. Ele já possui bastante coisa pronta, mas continua evoluindo conforme o uso mostra o que realmente ajuda no dia a dia.
