@@ -17,7 +17,12 @@ from app.database.categorias_repository import (
 
 
 def criar_categorias_padrao():
-    """Cria as categorias padrão se não existirem"""
+    """
+    Cria categorias iniciais apenas no primeiro uso.
+
+    Depois que ja existem categorias no banco, nao recria categorias padrao
+    que o usuario removeu manualmente. Apenas garante que "Geral" exista.
+    """
     categorias_padrao = [
         ("Geral", "Categoria padrão para produtos sem classificação"),
         ("Bebidas Alcoólicas", "Cervejas, vinhos, destilados, etc."),
@@ -31,7 +36,16 @@ def criar_categorias_padrao():
         ("Doces e Guloseimas", "Chocolates, balas, bombons"),
         ("Cigarros e Tabacaria", "Cigarros, isqueiros, etc.")
     ]
-    
+
+    categorias_existentes = listar_categorias(ativas=False)
+    if categorias_existentes:
+        if not obter_categoria_por_nome("Geral"):
+            try:
+                inserir_categoria("Geral", "Categoria padrão para produtos sem classificação")
+            except ValueError:
+                pass
+        return
+
     for nome, descricao in categorias_padrao:
         if not obter_categoria_por_nome(nome):
             try:

@@ -93,9 +93,19 @@ class CaixaView(QWidget):
         self.tabela_historico.setHorizontalHeaderLabels([
             "ID", "Abertura", "Fechamento", "Esperado", "Contado", "Diferenca", "Status"
         ])
+        self.tabela_historico.setSelectionBehavior(QTableWidget.SelectionBehavior.SelectRows)
+        self.tabela_historico.doubleClicked.connect(self.abrir_detalhes_historico)
         apply_table_style(self.tabela_historico)
         main_layout.addWidget(QLabel("Historico recente"))
         main_layout.addWidget(self.tabela_historico)
+
+        historico_buttons = QHBoxLayout()
+        historico_buttons.addStretch()
+        self.btn_detalhes_historico = QPushButton("Ver Detalhes do Caixa")
+        style_button(self.btn_detalhes_historico, "primary")
+        self.btn_detalhes_historico.clicked.connect(self.abrir_detalhes_historico)
+        historico_buttons.addWidget(self.btn_detalhes_historico)
+        main_layout.addLayout(historico_buttons)
 
     def _criar_card(self, titulo, valor, cor):
         widget = QWidget()
@@ -174,6 +184,7 @@ class CaixaView(QWidget):
             for col, valor in enumerate(valores):
                 item = QTableWidgetItem(str(valor))
                 item.setFlags(item.flags() & ~Qt.ItemFlag.ItemIsEditable)
+                item.setData(Qt.ItemDataRole.UserRole, caixa["id"])
                 if col == 5 and caixa["diferenca"] is not None:
                     item.setForeground(QColor("#b71c1c" if abs(caixa["diferenca"]) > 0.009 else "#2e7d32"))
                 self.tabela_historico.setItem(row, col, item)
@@ -212,12 +223,130 @@ class CaixaView(QWidget):
             else:
                 QMessageBox.warning(self, "Erro", resultado["mensagem"])
 
+    def abrir_detalhes_historico(self, *_args):
+        row = self.tabela_historico.currentRow()
+        if row < 0:
+            QMessageBox.warning(self, "Aviso", "Selecione um caixa no historico.")
+            return
+
+        item_id = self.tabela_historico.item(row, 0)
+        if not item_id:
+            QMessageBox.warning(self, "Aviso", "Selecione um caixa valido.")
+            return
+
+        try:
+            caixa_id = int(item_id.data(Qt.ItemDataRole.UserRole) or item_id.text())
+        except (TypeError, ValueError):
+            QMessageBox.warning(self, "Aviso", "Nao foi possivel identificar o caixa selecionado.")
+            return
+
+        resumo = obter_resumo_caixa(caixa_id)
+        if not resumo:
+            QMessageBox.warning(self, "Erro", "Caixa nao encontrado.")
+            return
+
+        CaixaDetalhesDialog(resumo, self).exec()
+
     def _mostrar_resultado(self, resultado):
         if resultado.get("sucesso"):
             QMessageBox.information(self, "Sucesso", resultado["mensagem"])
             self.carregar_dados()
         else:
             QMessageBox.warning(self, "Erro", resultado["mensagem"])
+
+    def _formatar_data(self, valor):
+        if not valor:
+            return "-"
+        texto = str(valor)
+        return texto[:16].replace("T", " ")
+
+
+class CaixaDetalhesDialog(QDialog):
+    def __init__(self, resumo, parent=None):
+        super().__init__(parent)
+        self.resumo = resumo
+        self.setWindowTitle(f"Detalhes do Caixa #{resumo['caixa']['id']}")
+        self.setMinimumSize(760, 520)
+        self.setStyleSheet(dialog_style())
+        self._setup_ui()
+
+    def _setup_ui(self):
+        caixa = self.resumo["caixa"]
+        movimentos = list(reversed(self.resumo["movimentos"]))
+
+        layout = QVBoxLayout(self)
+        layout.setSpacing(10)
+
+        titulo = QLabel(f"Caixa #{caixa['id']} - {caixa['status']}")
+        titulo.setFont(QFont("Arial", 12, QFont.Weight.Bold))
+        titulo.setStyleSheet(title_style())
+        layout.addWidget(titulo)
+
+        info = QGridLayout()
+        dados = [
+            ("Abertura", self._formatar_data(caixa["data_abertura"])),
+            ("Fechamento", self._formatar_data(caixa["data_fechamento"]) if caixa["data_fechamento"] else "-"),
+            ("Saldo inicial", _moeda(caixa["saldo_inicial"])),
+            ("Saldo esperado", _moeda(self.resumo["saldo_esperado"])),
+            ("Saldo contado", _moeda(caixa["saldo_contado"]) if caixa["saldo_contado"] is not None else "-"),
+            ("Diferenca", _moeda(caixa["diferenca"]) if caixa["diferenca"] is not None else "-"),
+            ("Entradas", _moeda(self.resumo["total_entradas"])),
+            ("Saidas", _moeda(self.resumo["total_saidas"])),
+        ]
+
+        for index, (rotulo, valor) in enumerate(dados):
+            label = QLabel(rotulo)
+            label.setStyleSheet("font-weight: bold; color: #555;")
+            value = QLabel(str(valor))
+            value.setStyleSheet("color: #111;")
+            info.addWidget(label, index // 2, (index % 2) * 2)
+            info.addWidget(value, index // 2, (index % 2) * 2 + 1)
+
+        layout.addLayout(info)
+
+        if caixa.get("observacoes"):
+            obs = QTextEdit()
+            obs.setReadOnly(True)
+            obs.setMaximumHeight(70)
+            obs.setPlainText(caixa["observacoes"])
+            layout.addWidget(QLabel("Observacoes do fechamento"))
+            layout.addWidget(obs)
+
+        layout.addWidget(QLabel("Movimentacoes do caixa"))
+        self.tabela = QTableWidget()
+        self.tabela.setColumnCount(6)
+        self.tabela.setHorizontalHeaderLabels(["Hora", "Tipo", "Descricao", "Valor", "Forma", "Origem"])
+        self.tabela.horizontalHeader().setSectionResizeMode(2, QHeaderView.ResizeMode.Stretch)
+        apply_table_style(self.tabela)
+        layout.addWidget(self.tabela)
+
+        self._popular_movimentos(movimentos)
+
+        botoes = QDialogButtonBox(QDialogButtonBox.StandardButton.Close)
+        botoes.rejected.connect(self.reject)
+        layout.addWidget(botoes)
+
+    def _popular_movimentos(self, movimentos):
+        self.tabela.setRowCount(0)
+        for movimento in movimentos:
+            row = self.tabela.rowCount()
+            self.tabela.insertRow(row)
+            valores = [
+                self._formatar_data(movimento["criado_em"]),
+                TIPOS_MOVIMENTO.get(movimento["tipo"], movimento["tipo"]),
+                movimento["descricao"],
+                _moeda(movimento["valor"]),
+                movimento["forma_pagamento"],
+                movimento["origem"],
+            ]
+
+            for col, valor in enumerate(valores):
+                item = QTableWidgetItem(str(valor))
+                item.setFlags(item.flags() & ~Qt.ItemFlag.ItemIsEditable)
+                if col == 3:
+                    cor = "#b71c1c" if movimento["tipo"] in ("SAIDA", "SANGRIA") else "#2e7d32"
+                    item.setForeground(QColor(cor))
+                self.tabela.setItem(row, col, item)
 
     def _formatar_data(self, valor):
         if not valor:
