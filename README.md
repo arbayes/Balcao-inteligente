@@ -114,19 +114,6 @@ python main.py
 
 Na primeira execucao, o sistema cria automaticamente as pastas locais de dados, backups e relatorios.
 
-## Pastas e dados locais
-
-O app usa SQLite local. Os dados reais ficam fora do Git por seguranca:
-
-- `data/`
-- `backups/`
-- `relatorios/`
-- `.venv/`
-- `build/`
-- `dist/`
-
-Essas pastas nao devem ser enviadas para o GitHub junto com dados reais de clientes, fornecedores, caixa ou vendas.
-
 
 ## Observacao
 
