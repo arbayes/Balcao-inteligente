@@ -1,0 +1,53 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pyc
+
+# Ambientes virtuais
+.venv/
+venv/
+env/
+ENV/
+
+# Configuracoes locais e segredos
+.env
+.env.*
+*.local
+
+# Bancos e dados reais do sistema
+data/*
+!data/.gitkeep
+*.db
+*.sqlite
+*.sqlite3
+
+# Backups e relatorios gerados pelo app
+backups/*
+!backups/.gitkeep
+relatorios/*
+!relatorios/.gitkeep
+*.pdf
+*.xlsx
+*.xls
+
+# Build/empacotamento
+build/
+dist/
+*.spec
+
+# Arquivos temporarios
+*.log
+*.tmp
+*.bak
+*.zip
+
+# Pasta criada por engano quando o repositorio ficou dentro do projeto
+Balcao-inteligente/
+
+# Sistema/IDE
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/

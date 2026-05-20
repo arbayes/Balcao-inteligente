@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<NFe xmlns="http://www.portalfiscal.inf.br/nfe">
+  <infNFe Id="NFe35210312345678901234551234567890123456789012">
+    <ide>
+      <dEmi>2024-01-15</dEmi>
+      <dSaiEnt>2024-01-15</dSaiEnt>
+    </ide>
+    <emit>
+      <CNPJ>12345678901234</CNPJ>
+      <xNome>DISTRIBUIDORA TESTE LTDA</xNome>
+    </emit>
+    <dest>
+      <CNPJ>87654321098765</CNPJ>
+      <xNome>ESTABELECIMENTO CASA GUARANI</xNome>
+    </dest>
+    <det nItem="1">
+      <prod>
+        <code>000001</code>
+        <xProd>Cerveja 600ml Premium</xProd>
+        <CFOP>5102</CFOP>
+        <uCom>UN</uCom>
+        <qCom>12</qCom>
+        <vUnCom>8.50</vUnCom>
+        <vProd>102.00</vProd>
+        <indTot>1</indTot>
+      </prod>
+    </det>
+    <det nItem="2">
+      <prod>
+        <code>000002</code>
+        <xProd>Refrigerante 2L Diet</xProd>
+        <CFOP>5102</CFOP>
+        <uCom>UN</uCom>
+        <qCom>8</qCom>
+        <vUnCom>5.25</vUnCom>
+        <vProd>42.00</vProd>
+        <indTot>1</indTot>
+      </prod>
+    </det>
+    <det nItem="3">
+      <prod>
+        <code>000003</code>
+        <xProd>Água Mineral 500ml Pack com 6</xProd>
+        <CFOP>5102</CFOP>
+        <uCom>UN</uCom>
+        <qCom>24</qCom>
+        <vUnCom>1.50</vUnCom>
+        <vProd>36.00</vProd>
+        <indTot>1</indTot>
+      </prod>
+    </det>
+    <total>
+      <ICMSTot>
+        <vProd>180.00</vProd>
+        <vNF>180.00</vNF>
+      </ICMSTot>
+    </total>
+  </infNFe>
+</NFe>
