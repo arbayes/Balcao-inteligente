@@ -127,23 +127,6 @@ O app usa SQLite local. Os dados reais ficam fora do Git por seguranca:
 
 Essas pastas nao devem ser enviadas para o GitHub junto com dados reais de clientes, fornecedores, caixa ou vendas.
 
-## GitHub
-
-Para subir o projeto:
-
-```powershell
-git add .
-git commit -m "Atualiza sistema de gerenciamento"
-git push origin main
-```
-
-Se for o primeiro envio da branch:
-
-```powershell
-git push -u origin main
-```
-
-Recomendacao: manter o repositorio privado enquanto o sistema estiver sendo usado em negocio real ou ainda tiver regras comerciais em desenvolvimento.
 
 ## Observacao
 
