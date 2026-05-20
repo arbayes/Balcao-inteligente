@@ -343,7 +343,7 @@ class MainWindow(QMainWindow):
         """Mostra informações sobre o sistema"""
         about_text = """
         <h2 style='color: #1976D2;'>Balcão Inteligente</h2>
-        <p><b>Versão:</b>0.5 (Beta)</p>
+        <p><b>Versão:</b> 0.6 (Beta)</p>
         <p><b>Data de criação:</b> Janeiro 2026</p>
         <hr style='border: 1px solid #FFC107;'>
         <p><b style='color: #1976D2;'>Modulos Inclusos:</b></p>
@@ -364,7 +364,7 @@ class MainWindow(QMainWindow):
             <li>Relatorios gerenciais avançados</li>
 
         </ul>
-        <p><i style='color: #FFC107;'>Balcão Inteligente 0.5 (Beta)</i></p>
+        <p><i style='color: #FFC107;'>Balcão Inteligente 0.6 (Beta)</i></p>
         """
         
         QMessageBox.about(self, "Sobre", about_text)
