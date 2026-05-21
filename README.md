@@ -104,7 +104,7 @@ A ideia não é substituir a correria do balcão, e sim oferecer um lugar confi�
 - Windows recomendado
 
 ### Passos
-
+h 
 ```powershell
 python -m venv .venv
 .\.venv\Scripts\activate

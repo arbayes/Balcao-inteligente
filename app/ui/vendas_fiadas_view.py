@@ -18,7 +18,7 @@ from app.services.estoque_service import buscar_produtos
 from app.services.vendas_fiadas_service import (
     criar_venda_fiada, obter_divida_cliente, pagar_venda,
     marcar_inadimplente, obter_resumo_inadimplentes, deletar_venda,
-    listar_vendas_fiadas_por_cliente, reconciliar_estoque_vendas_antigas
+    listar_vendas_fiadas_por_cliente
 )
 from app.database.vendas_fiadas_repository import listar_vendas_fiadas_pendentes
 from app.ui.styles import dialog_style, info_panel_style, style_button, style_card, tab_style, table_style, title_style
@@ -167,11 +167,6 @@ class VendasFiadasView(QWidget):
         btn_ver.clicked.connect(self._ver_detalhes)
         btn_layout.addWidget(btn_ver)
 
-        btn_corrigir = QPushButton("Corrigir Estoque Antigo")
-        style_button(btn_corrigir, "warning")
-        btn_corrigir.clicked.connect(self._corrigir_estoque_antigo)
-        btn_layout.addWidget(btn_corrigir)
-        
         layout.addLayout(btn_layout)
         
         self.tabs.addTab(tab, "👥 CLIENTES")
@@ -393,32 +388,6 @@ class VendasFiadasView(QWidget):
                 self.carregar_inadimplentes()
             else:
                 QMessageBox.warning(self, "❌ Erro", resultado['mensagem'])
-
-
-    def _corrigir_estoque_antigo(self):
-        """Baixa estoque de vendas antigas que ainda nao tinham integracao."""
-        resposta = QMessageBox.question(
-            self,
-            "Corrigir Estoque Antigo",
-            (
-                "Isso vai baixar do estoque as vendas fiadas antigas que ainda nao "
-                "tinham marcacao de estoque.\n\nUse apenas se voce nao ajustou "
-                "essas saidas manualmente. Continuar?"
-            ),
-            QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No
-        )
-
-        if resposta != QMessageBox.StandardButton.Yes:
-            return
-
-        resultado = reconciliar_estoque_vendas_antigas()
-        if resultado.get("sucesso"):
-            QMessageBox.information(self, "Resultado", resultado["mensagem"])
-            self.carregar_clientes()
-            self.carregar_inadimplentes()
-        else:
-            QMessageBox.warning(self, "Erro", resultado["mensagem"])
-
 
 class NovaVendaFiadaDialog(QDialog):
     """Diálogo para criar nova venda fiada"""

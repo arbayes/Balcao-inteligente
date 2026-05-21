@@ -13,7 +13,7 @@ from PyQt6.QtGui import QColor
 
 from app.services.categorias_service import (
     obter_todas_categorias, cadastrar_categoria, editar_categoria,
-    remover_categoria, ativar_cat
+    remover_categoria
 )
 from app.ui.styles import apply_table_style, dialog_style, section_title_style, style_button
 
@@ -80,12 +80,7 @@ class CategoriasView(QWidget):
         btn_editar.clicked.connect(self.editar_categoria)
         buttons_layout.addWidget(btn_editar)
         
-        btn_ativar = QPushButton("✅ Ativar")
-        style_button(btn_ativar, "success")
-        btn_ativar.clicked.connect(self.ativar_categoria)
-        buttons_layout.addWidget(btn_ativar)
-        
-        btn_deletar = QPushButton("🗑️ Excluir de Vez")
+        btn_deletar = QPushButton("🗑️ Excluir")
         btn_deletar.setToolTip("Remove a categoria do sistema. Se tiver produtos, eles podem ser movidos para Geral.")
         style_button(btn_deletar, "danger")
         btn_deletar.clicked.connect(self.deletar_categoria)
@@ -93,7 +88,7 @@ class CategoriasView(QWidget):
         
         main_layout.addLayout(buttons_layout)
     
-    def carregar_categorias(self, apenas_ativas=False):
+    def carregar_categorias(self, apenas_ativas=True):
         """Carrega categorias na tabela"""
         categorias = obter_todas_categorias(ativas_apenas=apenas_ativas)
         self.tabela.setRowCount(0)
@@ -139,7 +134,7 @@ class CategoriasView(QWidget):
     def _on_busca_changed(self):
         """Realiza busca conforme usuário digita"""
         termo = self.input_busca.text().lower()
-        categorias = obter_todas_categorias(ativas_apenas=False)
+        categorias = obter_todas_categorias(ativas_apenas=True)
         self.tabela.setRowCount(0)
         
         for categoria in categorias:
@@ -225,22 +220,6 @@ class CategoriasView(QWidget):
             else:
                 QMessageBox.warning(self, "Erro", resultado["mensagem"])
     
-    def ativar_categoria(self):
-        """Ativa categoria selecionada"""
-        row = self.tabela.currentRow()
-        if row < 0:
-            QMessageBox.warning(self, "Erro", "Selecione uma categoria para ativar!")
-            return
-        
-        categoria_id = int(self.tabela.item(row, 0).text())
-        resultado = ativar_cat(categoria_id)
-        
-        if resultado.get("sucesso"):
-            QMessageBox.information(self, "Sucesso", resultado["mensagem"])
-            self.carregar_categorias()
-        else:
-            QMessageBox.warning(self, "Erro", resultado["mensagem"])
-    
     def deletar_categoria(self):
         """Exclui definitivamente a categoria selecionada."""
         row = self.tabela.currentRow()
@@ -255,8 +234,8 @@ class CategoriasView(QWidget):
             self,
             "Excluir Categoria",
             (
-                f"Tem certeza que deseja excluir de vez a categoria '{categoria_nome}'?\n\n"
-                "Ela nao ficara apenas inativa."
+                f"Tem certeza que deseja excluir a categoria '{categoria_nome}'?\n\n"
+                "Se ela tiver produtos, voce podera move-los para 'Geral'."
             ),
             QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No
         )

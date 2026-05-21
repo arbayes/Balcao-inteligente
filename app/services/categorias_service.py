@@ -246,7 +246,7 @@ def remover_categoria(categoria_id: int, forcado=False) -> dict:
         
         return {
             "sucesso": True,
-            "mensagem": f"Categoria '{categoria['nome']}' excluida de vez."
+            "mensagem": f"Categoria '{categoria['nome']}' excluida."
         }
     except Exception as e:
         return {

@@ -127,11 +127,6 @@ class ClientesView(QWidget):
         btn_deletar.clicked.connect(self.deletar_cliente)
         buttons_layout.addWidget(btn_deletar)
         
-        btn_reativar = QPushButton("♻️ Reativar")
-        style_button(btn_reativar, "warning")
-        btn_reativar.clicked.connect(self.reativar_cliente)
-        buttons_layout.addWidget(btn_reativar)
-        
         main_layout.addLayout(buttons_layout)
     
     def carregar_clientes(self):
@@ -332,15 +327,6 @@ class ClientesView(QWidget):
             else:
                 QMessageBox.warning(self, "❌ Erro", resultado["mensagem"])
     
-    def reativar_cliente(self):
-        """Reativa cliente deletado"""
-        QMessageBox.information(
-            self, 
-            "ℹ️ Informação",
-            "Função de reativação será implementada em breve.\n\nContacte o administrador do sistema."
-        )
-
-
 class ClienteDialog(QDialog):
     """Diálogo para criar/editar cliente com todos os campos"""
     
